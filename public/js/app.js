@@ -1927,6 +1927,86 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PlayButton.vue?vue&type=script&lang=js&":
+/*!*********************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/PlayButton.vue?vue&type=script&lang=js& ***!
+  \*********************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'PlayButton',
+  data: function data() {
+    return {
+      playerMove: "",
+      computerMove: "",
+      winner: ""
+    };
+  },
+  mounted: function mounted() {
+    this.$root.$on('move', this.player);
+  },
+  methods: {
+    player: function player(data) {
+      this.playerMove = data;
+    },
+    play: function play() {
+      var _this = this;
+
+      axios.get('/get-move').then(function (response) {
+        _this.computerMove = response.data.move;
+
+        _this.$root.$emit('computerMove', _this.computerMove);
+
+        _this.checkForWin();
+      })["catch"](function (error) {
+        console.log(error);
+        _this.quote = 'Error getting that sweet sweet Kanye Quote';
+      });
+    },
+    checkForWin: function checkForWin() {
+      if (this.computerMove == this.playerMove) {
+        this.$root.$emit('draw');
+        this.winner = "DRAW!!";
+      } else if (this.playerMove == "rock") {
+        if (this.computerMove == "paper") {
+          this.$root.$emit('computerWins');
+          this.winner = "Computer Won!! Try again.";
+        } else if (this.computerMove == "scissor") {
+          this.$root.$emit('playerWins');
+          this.winner = "You Won!! Keep it up.";
+        }
+      } else if (this.playerMove == "paper") {
+        if (this.computerMove == "rock") {
+          this.$root.$emit('playerWins');
+          this.winner = "You Won!! Keep it up.";
+        } else if (this.computerMove == "scissor") {
+          this.$root.$emit('computerWins');
+          this.winner = "Computer Won!! Try again.";
+        }
+      } else if (this.playerMove == "scissor") {
+        if (this.computerMove == "paper") {
+          this.$root.$emit('playerWins');
+          this.winner = "You Won!! Keep it up.";
+        } else if (this.computerMove == "rock") {
+          this.$root.$emit('computerWins');
+          this.winner = "Computer Won!! Try again.";
+        }
+      }
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Root.vue?vue&type=script&lang=js&":
 /*!***************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Root.vue?vue&type=script&lang=js& ***!
@@ -1937,9 +2017,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _MoveButton_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MoveButton.vue */ "./resources/js/components/MoveButton.vue");
-//
-//
-//
+/* harmony import */ var _PlayButton_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PlayButton.vue */ "./resources/js/components/PlayButton.vue");
 //
 //
 //
@@ -1965,24 +2043,54 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'Root',
   data: function data() {
     return {
       currentStreak: 0,
+      highestStreak: 0,
       playerMoveImage: "images/default.png",
-      computerMoveImage: "images/default.png"
+      computerMoveImage: "images/default.png",
+      isPlayerWinner: true,
+      isComputerWinner: true
     };
   },
   components: {
-    MoveButton: _MoveButton_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+    MoveButton: _MoveButton_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
+    PlayButton: _PlayButton_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   mounted: function mounted() {
     this.$root.$on('move', this.changeImage);
+    this.$root.$on('computerMove', this.changeComputerImage);
+    this.$root.$on('computerWins', this.computerWon);
+    this.$root.$on('playerWins', this.playerWon);
+    this.$root.$on('draw', this.draw);
   },
   methods: {
     changeImage: function changeImage(data) {
       this.playerMoveImage = "images/" + data + ".png";
+    },
+    changeComputerImage: function changeComputerImage(data) {
+      this.computerMoveImage = "images/" + data + ".png";
+    },
+    playerWon: function playerWon() {
+      this.currentStreak++;
+      this.isPlayerWinner = true;
+      this.isComputerWinner = false;
+
+      if (this.currentStreak > this.highestStreak) {
+        this.highestStreak = this.currentStreak;
+      }
+    },
+    computerWon: function computerWon() {
+      this.currentStreak = 0;
+      this.isPlayerWinner = false;
+      this.isComputerWinner = true;
+    },
+    draw: function draw() {
+      this.isPlayerWinner = true;
+      this.isComputerWinner = true;
     }
   }
 });
@@ -6532,7 +6640,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n#moves[data-v-0fa39ce4]{\n    display: grid;\n    grid-template-columns: 1fr 1fr 1fr;\n}\n", ""]);
+exports.push([module.i, "\n#moves[data-v-0fa39ce4]{\n    display: grid;\n    grid-template-columns: 1fr 1fr 1fr;\n    gap: 10px;\n}\n", ""]);
 
 // exports
 
@@ -6551,7 +6659,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n*{\n    margin: 0;\n    padding: 0;\n}\nbody{\n     background-color: lightblue;\n}\n#container {\n    display: grid;\n    margin: 20px;\n    /* place-items: center; */\n    place-self: center;\n    grid-template-areas: 'streak streak'\n                         'playerBox computerBox'\n                         'playerBox computerBox'\n                         'play play';\n    text-align: center;\n    gap: 20px;\n}\n#streak{\n    grid-area: streak;\n}\n#play{\n    display: grid;\n    place-content: center;\n    border: 1px solid black;\n    grid-area: play;\n}\n#player-box{\n    border: 1px solid black;\n    display: grid;\n    gap: 20px;\n    grid-area: playerBox;\n}\n#computer-box{\n    border: 1px solid black;\n    display: grid;\n    grid-area: computerBox;\n}\nimg{\n    width: 500px;\n    height: 400px;\n}\n", ""]);
+exports.push([module.i, "\n*{\n    margin: 0;\n    padding: 0;\n}\n/* body{\n     background-color: lightblue;\n} */\n#container {\n    display: grid;\n    margin: 20px;\n    /* place-items: center; */\n    place-self: center;\n    grid-template-areas: 'streak streak'\n                         'playerBox computerBox'\n                         'playerBox computerBox'\n                         'play play';\n    text-align: center;\n    gap: 20px;\n}\n#streak{\n    grid-area: streak;\n}\n#play{\n    display: grid;\n    place-content: center;\n    grid-area: play;\n}\n#player-box{\n    /* border: 1px solid black; */\n    display: grid;\n    gap: 20px;\n    grid-area: playerBox;\n}\n#computer-box{\n    /* border: 1px solid black; */\n    display: grid;\n    grid-area: computerBox;\n}\nimg{\n    width: 500px;\n    height: 400px;\n}\n.win{\n    border: 5px solid green;\n}\n.lose{\n    border: 5px solid red;\n}\n", ""]);
 
 // exports
 
@@ -38098,6 +38206,34 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PlayButton.vue?vue&type=template&id=5aec3d9e&scoped=true&":
+/*!*************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/PlayButton.vue?vue&type=template&id=5aec3d9e&scoped=true& ***!
+  \*************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _c("h1", [_vm._v(_vm._s(_vm.winner))]),
+    _vm._v(" "),
+    _c("button", { on: { click: _vm.play } }, [_vm._v("PLAY!")])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Root.vue?vue&type=template&id=cca49266&":
 /*!*******************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Root.vue?vue&type=template&id=cca49266& ***!
@@ -38113,45 +38249,51 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { attrs: { id: "container" } }, [
-    _vm._m(0),
-    _vm._v(" "),
-    _c(
-      "div",
-      { attrs: { id: "player-box" } },
-      [
-        _c("h1", [_vm._v("You")]),
+  return _c(
+    "div",
+    { attrs: { id: "container" } },
+    [
+      _c("div", { attrs: { id: "streak" } }, [
+        _c("h1", [_vm._v("Current Streak : " + _vm._s(_vm.currentStreak))]),
         _vm._v(" "),
-        _c("MoveButton"),
-        _vm._v(" "),
-        _c("div", [_c("img", { attrs: { src: _vm.playerMoveImage } })])
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c("div", { attrs: { id: "computer-box" } }, [
-      _c("h1", [_vm._v("Computer")]),
+        _c("h1", [_vm._v("Highest Streak : " + _vm._s(_vm.highestStreak))])
+      ]),
       _vm._v(" "),
-      _c("div", [_c("img", { attrs: { src: _vm.computerMoveImage } })])
-    ]),
-    _vm._v(" "),
-    _vm._m(1)
-  ])
+      _c(
+        "div",
+        {
+          class: this.isPlayerWinner ? "win" : "lose",
+          attrs: { id: "player-box" }
+        },
+        [
+          _c("h1", [_vm._v("You")]),
+          _vm._v(" "),
+          _c("MoveButton"),
+          _vm._v(" "),
+          _c("div", [_c("img", { attrs: { src: _vm.playerMoveImage } })])
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          class: this.isComputerWinner ? "win" : "lose",
+          attrs: { id: "computer-box" }
+        },
+        [
+          _c("h1", [_vm._v("Computer")]),
+          _vm._v(" "),
+          _c("div", [_c("img", { attrs: { src: _vm.computerMoveImage } })])
+        ]
+      ),
+      _vm._v(" "),
+      _c("PlayButton", { attrs: { id: "play" } })
+    ],
+    1
+  )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { attrs: { id: "streak" } }, [_c("h1", [_vm._v("score")])])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { attrs: { id: "play" } }, [_c("h1", [_vm._v("play")])])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -50480,6 +50622,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_MoveButton_vue_vue_type_template_id_0fa39ce4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_MoveButton_vue_vue_type_template_id_0fa39ce4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/PlayButton.vue":
+/*!************************************************!*\
+  !*** ./resources/js/components/PlayButton.vue ***!
+  \************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _PlayButton_vue_vue_type_template_id_5aec3d9e_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./PlayButton.vue?vue&type=template&id=5aec3d9e&scoped=true& */ "./resources/js/components/PlayButton.vue?vue&type=template&id=5aec3d9e&scoped=true&");
+/* harmony import */ var _PlayButton_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PlayButton.vue?vue&type=script&lang=js& */ "./resources/js/components/PlayButton.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _PlayButton_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _PlayButton_vue_vue_type_template_id_5aec3d9e_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _PlayButton_vue_vue_type_template_id_5aec3d9e_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "5aec3d9e",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/PlayButton.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/PlayButton.vue?vue&type=script&lang=js&":
+/*!*************************************************************************!*\
+  !*** ./resources/js/components/PlayButton.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_PlayButton_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./PlayButton.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PlayButton.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_PlayButton_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/PlayButton.vue?vue&type=template&id=5aec3d9e&scoped=true&":
+/*!*******************************************************************************************!*\
+  !*** ./resources/js/components/PlayButton.vue?vue&type=template&id=5aec3d9e&scoped=true& ***!
+  \*******************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PlayButton_vue_vue_type_template_id_5aec3d9e_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./PlayButton.vue?vue&type=template&id=5aec3d9e&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/PlayButton.vue?vue&type=template&id=5aec3d9e&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PlayButton_vue_vue_type_template_id_5aec3d9e_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PlayButton_vue_vue_type_template_id_5aec3d9e_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
