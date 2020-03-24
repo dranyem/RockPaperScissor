@@ -38178,11 +38178,11 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { attrs: { id: "moves" } }, [
+  return _c("div", { staticClass: "columns", attrs: { id: "moves" } }, [
     _c(
       "button",
       {
-        staticClass: "button is-danger",
+        staticClass: " column button is-danger",
         on: {
           click: function($event) {
             return _vm.playerMove("rock")
@@ -38195,7 +38195,7 @@ var render = function() {
     _c(
       "button",
       {
-        staticClass: "button is-info",
+        staticClass: "column button is-info",
         on: {
           click: function($event) {
             return _vm.playerMove("paper")
@@ -38208,7 +38208,7 @@ var render = function() {
     _c(
       "button",
       {
-        staticClass: "button is-warning",
+        staticClass: "column button is-warning",
         on: {
           click: function($event) {
             return _vm.playerMove("scissor")
