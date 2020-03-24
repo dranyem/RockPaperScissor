@@ -1,24 +1,24 @@
 <template>
     <div id="container">
-        <div id="streak">
-            <h1>Current Streak : {{currentStreak}}</h1>
-            <h1>Highest Streak : {{highestStreak}}</h1>
+        <div class="level" id="streak">
+            <h1 class="title level-left">Current Streak : {{currentStreak}}</h1>
+            <h1 class="title level-right">Highest Streak : {{highestStreak}}</h1>
         </div>
-        <div id="player-box" :class="this.isPlayerWinner? 'win':'lose'">
-            <h1>You</h1>
+        <div class="box" id="player-box" :class="this.isPlayerWinner? 'win':'lose'">
+            <h1 class="title">You</h1>
             <MoveButton />
             <div>
                 <img :src="playerMoveImage" >
             </div>
         </div>
-        <div id="computer-box" :class="this.isComputerWinner? 'win':'lose'">
-            <h1>Computer</h1>
+        <div class="box" id="computer-box" :class="this.isComputerWinner? 'win':'lose'">
+            <h1 class="title">Computer</h1>
+            <h2 class="subtitle">{{computerMove.toUpperCase()}}</h2>
             <div>
-                <img  :src="computerMoveImage" >
+                <img :src="computerMoveImage" >
             </div>
         </div>
         <PlayButton id="play"/>
-
     </div>
 </template>
 
@@ -31,8 +31,9 @@ import PlayButton from './PlayButton.vue'
             return {
                 currentStreak: 0,
                 highestStreak: 0,
-                playerMoveImage: "images/default.png",
+                playerMoveImage: "images/rock.png",
                 computerMoveImage: "images/default.png",
+                computerMove:"",
                 isPlayerWinner: true,
                 isComputerWinner: true,
             }
@@ -47,6 +48,7 @@ import PlayButton from './PlayButton.vue'
             this.$root.$on('computerWins', this.computerWon);
             this.$root.$on('playerWins', this.playerWon);
             this.$root.$on('draw', this.draw);
+            this.$root.$on('animateImage', this.animate);
         },
         methods: {
             changeImage(data){
@@ -54,6 +56,7 @@ import PlayButton from './PlayButton.vue'
             },
             changeComputerImage(data){
                 this.computerMoveImage = "images/"+data+".png";
+                this.computerMove = data;
             },
             playerWon(){
                 this.currentStreak++;
@@ -72,8 +75,11 @@ import PlayButton from './PlayButton.vue'
             draw(){
                 this.isPlayerWinner = true;
                 this.isComputerWinner =true;
+            },
+            animate(data){
+                this.computerMoveImage = "images/"+data+".png";
+                this.computerMove = data;
             }
-
         }
 
     }
@@ -89,15 +95,16 @@ import PlayButton from './PlayButton.vue'
 } */
 #container {
     display: grid;
-    margin: 20px;
-    /* place-items: center; */
+    margin: 10px 30px 0 30px;
     place-self: center;
     grid-template-areas: 'streak streak'
                          'playerBox computerBox'
                          'playerBox computerBox'
                          'play play';
     text-align: center;
-    gap: 20px;
+    /* gap: 50px; */
+    row-gap: 0;
+    column-gap: 25px;
 
 }
 #streak{
@@ -120,8 +127,9 @@ import PlayButton from './PlayButton.vue'
     grid-area: computerBox;
 }
 img{
-    width: 500px;
-    height: 400px;
+    min-width: 200px;
+    width: 300px;
+    height: 300px;
 }
 .win{
     border: 5px solid green;

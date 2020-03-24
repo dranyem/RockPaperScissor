@@ -1946,7 +1946,7 @@ __webpack_require__.r(__webpack_exports__);
   name: 'PlayButton',
   data: function data() {
     return {
-      playerMove: "",
+      playerMove: "rock",
       computerMove: "",
       winner: ""
     };
@@ -1961,15 +1961,23 @@ __webpack_require__.r(__webpack_exports__);
     play: function play() {
       var _this = this;
 
+      var top = this;
       axios.get('/get-move').then(function (response) {
-        _this.computerMove = response.data.move;
-
-        _this.$root.$emit('computerMove', _this.computerMove);
-
-        _this.checkForWin();
+        var index = 0;
+        var moves = ["rock", "paper", "scissor", "rock", "paper", "scissor"];
+        var interval = setInterval(function () {
+          top.$root.$emit('animateImage', moves[index]);
+          index++;
+        }, 500);
+        var clearInt = setTimeout(function () {
+          top.computerMove = response.data.move;
+          top.$root.$emit('computerMove', top.computerMove);
+          top.checkForWin();
+          clearInterval(interval);
+        }, 3000);
       })["catch"](function (error) {
         console.log(error);
-        _this.quote = 'Error getting that sweet sweet Kanye Quote';
+        _this.quote = 'Error';
       });
     },
     checkForWin: function checkForWin() {
@@ -2000,6 +2008,8 @@ __webpack_require__.r(__webpack_exports__);
           this.$root.$emit('computerWins');
           this.winner = "Computer Won!! Try again.";
         }
+      } else {
+        this.winner = "Please choose your move!";
       }
     }
   }
@@ -2050,8 +2060,9 @@ __webpack_require__.r(__webpack_exports__);
     return {
       currentStreak: 0,
       highestStreak: 0,
-      playerMoveImage: "images/default.png",
+      playerMoveImage: "images/rock.png",
       computerMoveImage: "images/default.png",
+      computerMove: "",
       isPlayerWinner: true,
       isComputerWinner: true
     };
@@ -2066,6 +2077,7 @@ __webpack_require__.r(__webpack_exports__);
     this.$root.$on('computerWins', this.computerWon);
     this.$root.$on('playerWins', this.playerWon);
     this.$root.$on('draw', this.draw);
+    this.$root.$on('animateImage', this.animate);
   },
   methods: {
     changeImage: function changeImage(data) {
@@ -2073,6 +2085,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     changeComputerImage: function changeComputerImage(data) {
       this.computerMoveImage = "images/" + data + ".png";
+      this.computerMove = data;
     },
     playerWon: function playerWon() {
       this.currentStreak++;
@@ -2091,6 +2104,10 @@ __webpack_require__.r(__webpack_exports__);
     draw: function draw() {
       this.isPlayerWinner = true;
       this.isComputerWinner = true;
+    },
+    animate: function animate(data) {
+      this.computerMoveImage = "images/" + data + ".png";
+      this.computerMove = data;
     }
   }
 });
@@ -6659,7 +6676,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n*{\n    margin: 0;\n    padding: 0;\n}\n/* body{\n     background-color: lightblue;\n} */\n#container {\n    display: grid;\n    margin: 20px;\n    /* place-items: center; */\n    place-self: center;\n    grid-template-areas: 'streak streak'\n                         'playerBox computerBox'\n                         'playerBox computerBox'\n                         'play play';\n    text-align: center;\n    gap: 20px;\n}\n#streak{\n    grid-area: streak;\n}\n#play{\n    display: grid;\n    place-content: center;\n    grid-area: play;\n}\n#player-box{\n    /* border: 1px solid black; */\n    display: grid;\n    gap: 20px;\n    grid-area: playerBox;\n}\n#computer-box{\n    /* border: 1px solid black; */\n    display: grid;\n    grid-area: computerBox;\n}\nimg{\n    width: 500px;\n    height: 400px;\n}\n.win{\n    border: 5px solid green;\n}\n.lose{\n    border: 5px solid red;\n}\n", ""]);
+exports.push([module.i, "\n*{\n    margin: 0;\n    padding: 0;\n}\n/* body{\n     background-color: lightblue;\n} */\n#container {\n    display: grid;\n    margin: 10px 30px 0 30px;\n    place-self: center;\n    grid-template-areas: 'streak streak'\n                         'playerBox computerBox'\n                         'playerBox computerBox'\n                         'play play';\n    text-align: center;\n    /* gap: 50px; */\n    row-gap: 0;\n    -moz-column-gap: 25px;\n         column-gap: 25px;\n}\n#streak{\n    grid-area: streak;\n}\n#play{\n    display: grid;\n    place-content: center;\n    grid-area: play;\n}\n#player-box{\n    /* border: 1px solid black; */\n    display: grid;\n    gap: 20px;\n    grid-area: playerBox;\n}\n#computer-box{\n    /* border: 1px solid black; */\n    display: grid;\n    grid-area: computerBox;\n}\nimg{\n    min-width: 200px;\n    width: 300px;\n    height: 300px;\n}\n.win{\n    border: 5px solid green;\n}\n.lose{\n    border: 5px solid red;\n}\n", ""]);
 
 // exports
 
@@ -38165,6 +38182,7 @@ var render = function() {
     _c(
       "button",
       {
+        staticClass: "button is-danger",
         on: {
           click: function($event) {
             return _vm.playerMove("rock")
@@ -38177,6 +38195,7 @@ var render = function() {
     _c(
       "button",
       {
+        staticClass: "button is-info",
         on: {
           click: function($event) {
             return _vm.playerMove("paper")
@@ -38189,6 +38208,7 @@ var render = function() {
     _c(
       "button",
       {
+        staticClass: "button is-warning",
         on: {
           click: function($event) {
             return _vm.playerMove("scissor")
@@ -38221,10 +38241,16 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _c("h1", [_vm._v(_vm._s(_vm.winner))]),
+  return _c("div", { staticClass: "tile" }, [
+    _c("h1", { staticClass: "subtitle" }, [
+      _vm._v(_vm._s(_vm.winner.toUpperCase()))
+    ]),
     _vm._v(" "),
-    _c("button", { on: { click: _vm.play } }, [_vm._v("PLAY!")])
+    _c(
+      "button",
+      { staticClass: "button is-success is-medium", on: { click: _vm.play } },
+      [_vm._v("PLAY!")]
+    )
   ])
 }
 var staticRenderFns = []
@@ -38253,20 +38279,25 @@ var render = function() {
     "div",
     { attrs: { id: "container" } },
     [
-      _c("div", { attrs: { id: "streak" } }, [
-        _c("h1", [_vm._v("Current Streak : " + _vm._s(_vm.currentStreak))]),
+      _c("div", { staticClass: "level", attrs: { id: "streak" } }, [
+        _c("h1", { staticClass: "title level-left" }, [
+          _vm._v("Current Streak : " + _vm._s(_vm.currentStreak))
+        ]),
         _vm._v(" "),
-        _c("h1", [_vm._v("Highest Streak : " + _vm._s(_vm.highestStreak))])
+        _c("h1", { staticClass: "title level-right" }, [
+          _vm._v("Highest Streak : " + _vm._s(_vm.highestStreak))
+        ])
       ]),
       _vm._v(" "),
       _c(
         "div",
         {
+          staticClass: "box",
           class: this.isPlayerWinner ? "win" : "lose",
           attrs: { id: "player-box" }
         },
         [
-          _c("h1", [_vm._v("You")]),
+          _c("h1", { staticClass: "title" }, [_vm._v("You")]),
           _vm._v(" "),
           _c("MoveButton"),
           _vm._v(" "),
@@ -38278,11 +38309,16 @@ var render = function() {
       _c(
         "div",
         {
+          staticClass: "box",
           class: this.isComputerWinner ? "win" : "lose",
           attrs: { id: "computer-box" }
         },
         [
-          _c("h1", [_vm._v("Computer")]),
+          _c("h1", { staticClass: "title" }, [_vm._v("Computer")]),
+          _vm._v(" "),
+          _c("h2", { staticClass: "subtitle" }, [
+            _vm._v(_vm._s(_vm.computerMove.toUpperCase()))
+          ]),
           _vm._v(" "),
           _c("div", [_c("img", { attrs: { src: _vm.computerMoveImage } })])
         ]

@@ -1,8 +1,8 @@
 <template>
     <div id="moves">
-        <button @click="playerMove('rock')">ROCK</button>
-        <button @click="playerMove('paper')">PAPER</button>
-        <button @click="playerMove('scissor')">SCISSOR</button>
+        <button class="button is-danger" @click="playerMove('rock')">ROCK</button>
+        <button class="button is-info" @click="playerMove('paper')">PAPER</button>
+        <button class="button is-warning" @click="playerMove('scissor')">SCISSOR</button>
     </div>
 </template>
 
